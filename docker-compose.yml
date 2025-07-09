@@ -1,27 +1,35 @@
+version: '3.7'
+
 services:
 
   selenoid:
-    image: "aerokube/selenoid"
+    image: "aerokube/selenoid:latest"
     container_name: selenoid
     ports:
       - "4444:4444"
     networks:
       - selenoid
     volumes:
-      - "./config.json:/etc/selenoid/config.json"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    command: ["-conf", "/etc/selenoid/config.json", "-container-network", "selenoid"]
+      - "./config.json:/etc/selenoid/config.json:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    command:
+      - "-conf"
+      - "/etc/selenoid/config.json"
+      - "-container-network"
+      - "selenoid"
 
   selenoid-ui:
     image: "aerokube/selenoid-ui:latest"
     container_name: selenoid-ui
-    links:
+    depends_on:
       - selenoid
     ports:
       - "8081:8080"
     networks:
       - selenoid
-    command: ["--selenoid-uri", "http://selenoid:4444"]
+    command:
+      - "--selenoid-uri"
+      - "http://selenoid:4444"
 
   test_docker:
     build: .
@@ -30,8 +38,12 @@ services:
       - selenoid
     networks:
       - selenoid
+    environment:
+      SELENIUM_REMOTE_URL: "http://selenoid:4444/wd/hub"
     tty: true
-    command: ["pytest"]
+    command:
+      - pytest
+      - "--alluredir=allure-results"
 
 networks:
   selenoid:
