@@ -1,0 +1,8 @@
+from selenium.webdriver.common.by import By
+
+
+class AuthPageLocators:
+    LOGIN_TITLE = (By.XPATH, "//h1[text()='Войти на сайт']")
+    EMAIL_INPUT = (By.XPATH, "//input[@name='email']")
+    PASSWORD_INPUT = (By.XPATH, "//input[@name='password']")
+    LOGIN_BUTTON = (By.XPATH, "//button[text()='Войти']")
